@@ -1,0 +1,14 @@
+my_project:
+  outputs:
+    dev:
+      type: redshift
+      host: sales-data-cluster.ct53trcnlim2.us-east-1.redshift.amazonaws.com
+      user: admin
+      password: Koc12345
+      port: 5439
+      dbname: dev
+      schema: public
+      threads: 4
+      connect_timeout: 120
+  target: dev
+

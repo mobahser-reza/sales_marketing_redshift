@@ -1,0 +1,7 @@
+-- models/stg_product_catalog.sql
+SELECT
+    product_id,
+    product_name,
+    category
+FROM
+    {{ ref('product_catalog') }}  -- Referring to the existing model in dbt

@@ -1,0 +1,80 @@
+version: 2
+
+# Define your sources (raw tables in your database)
+sources:
+  - name: public  # Replace with your actual schema name
+    database: dev     # Replace with your actual database name
+    schema: public         # Replace with your actual schema name
+    tables:
+      - name: marketing_events
+        description: "Raw table containing marketing events data."
+      - name: sales_transactions
+        description: "Raw table containing sales transactions data."
+      - name: product_catalog
+        description: "Raw table containing product catalog data."
+
+# Define your dbt models
+models:
+  - name: stg_sales_transactions
+    description: "Aggregates sales data by year, month, and category"
+    columns:
+      - name: transaction_year
+        description: "The year of the transaction"
+      - name: transaction_month
+        description: "The month of the transaction"
+      - name: unique_customers
+        description: "The number of unique customers"
+      - name: total_revenue
+        description: "Total revenue from transactions"
+      - name: total_cost
+        description: "Total cost of the transactions"
+    tests:
+      - unique:
+          column_name: transaction_id
+      - not_null:
+          column_name: transaction_year
+      - not_null:
+          column_name: transaction_month
+
+  - name: stg_marketing_events
+    description: "Aggregates marketing data by year, month, and campaign"
+    columns:
+      - name: event_year
+        description: "The year of the marketing event"
+      - name: event_month
+        description: "The month of the marketing event"
+      - name: total_cost
+        description: "The total cost of marketing events"
+      - name: total_events
+        description: "The total number of marketing events"
+    tests:
+      - not_null:
+          column_name: event_year
+      - not_null:
+          column_name: event_month
+
+  - name: stg_product_catalog
+    description: "Contains product details including ID, name, and category"
+    columns:
+      - name: product_id
+        description: "The unique identifier for a product"
+      - name: product_name
+        description: "The name of the product"
+      - name: category
+        description: "The category of the product"
+    tests:
+      - not_null:
+          column_name: product_id
+      - not_null:
+          column_name: product_name
+      - not_null:
+          column_name: category
+
+  - name: fct_marketing_sales_performance
+    description: "Final model combining sales and marketing data to calculate key performance metrics such as revenue-to-cost ratio."
+    columns:
+      - name: revenue_to_cost_ratio
+        description: "Ratio of total revenue to total cost. Calculated using the `calculate_revenue_to_cost_ratio` macro."
+        tests:
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5]  # Example range for ratio
